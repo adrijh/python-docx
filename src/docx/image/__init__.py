@@ -5,6 +5,7 @@ them in a document.
 """
 
 from docx.image.bmp import Bmp
+from docx.image.emf import Emf
 from docx.image.gif import Gif
 from docx.image.jpeg import Exif, Jfif
 from docx.image.png import Png
@@ -20,4 +21,10 @@ SIGNATURES = (
     (Tiff, 0, b"MM\x00*"),  # big-endian (Motorola) TIFF
     (Tiff, 0, b"II*\x00"),  # little-endian (Intel) TIFF
     (Bmp, 0, b"BM"),
+    (Emf, 40, b"\x20EMF"),
 )
+
+SIGNATURE_READ_BYTES = max([
+    len(signature_bytes) + offset
+    for _, offset, signature_bytes in SIGNATURES
+])

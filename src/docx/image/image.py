@@ -167,13 +167,13 @@ class Image:
 
 def _ImageHeaderFactory(stream: IO[bytes]):
     """A |BaseImageHeader| subclass instance that can parse headers of image in `stream`."""
-    from docx.image import SIGNATURES
+    from docx.image import SIGNATURE_READ_BYTES, SIGNATURES
 
-    def read_32(stream: IO[bytes]):
+    def read_header(stream: IO[bytes]):
         stream.seek(0)
-        return stream.read(32)
+        return stream.read(SIGNATURE_READ_BYTES)
 
-    header = read_32(stream)
+    header = read_header(stream)
     for cls, offset, signature_bytes in SIGNATURES:
         end = offset + len(signature_bytes)
         found_bytes = header[offset:end]
