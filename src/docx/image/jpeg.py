@@ -25,6 +25,25 @@ class Jpeg(BaseImageHeader):
         """Default filename extension, always 'jpg' for JPG images."""
         return "jpg"
 
+class RawJpeg(Jpeg):
+    """Image header parser for Jpeg image format without APP headers."""
+
+    DEFAULT_DPI = 72
+
+    @classmethod
+    def from_stream(cls, stream):
+        """Return |Exif| instance having header properties parsed from Exif image in
+        `stream`."""
+        markers = _JfifMarkers.from_stream(stream)
+        # print('\n%s' % markers)
+
+        px_width = markers.sof.px_width
+        px_height = markers.sof.px_height
+        horz_dpi = cls.DEFAULT_DPI
+        vert_dpi = cls.DEFAULT_DPI
+
+        return cls(px_width, px_height, horz_dpi, vert_dpi)
+
 
 class Exif(Jpeg):
     """Image header parser for Exif image format."""

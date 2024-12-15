@@ -2,6 +2,12 @@
 
 *python-docx* is a Python library for reading, creating, and updating Microsoft Word 2007+ (.docx) files.
 
+## Fork
+This fork differs from the main repository in that it includes:
+- Emf image support
+- Svg image support
+- Jpeg (without APP headers) image support
+
 ## Installation
 
 ```
