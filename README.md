@@ -7,6 +7,7 @@ This fork differs from the main repository in that it includes:
 - Emf image support
 - Svg image support
 - Jpeg (without APP headers) image support
+- Placeable WMF support
 
 ## Installation
 
