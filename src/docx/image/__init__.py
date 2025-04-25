@@ -11,6 +11,7 @@ from docx.image.jpeg import Exif, Jfif, RawJpeg
 from docx.image.png import Png
 from docx.image.svg import Svg
 from docx.image.tiff import Tiff
+from docx.image.wmf import PlaceableWmf
 
 SIGNATURES = (
     # class, offset, signature_bytes
@@ -25,6 +26,7 @@ SIGNATURES = (
     (Bmp, 0, b"BM"),
     (Emf, 40, b"\x20EMF"),
     (Svg, 0, b"<svg"),
+    (PlaceableWmf, 0, b"\xd7\xcd\xc6\x9a"),
 )
 
 SIGNATURE_READ_BYTES = max([

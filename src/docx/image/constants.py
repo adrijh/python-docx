@@ -107,6 +107,7 @@ class MIME_TYPE:
     TIFF = "image/tiff"
     EMF = "image/x-emf"
     SVG = "image/svg+xml"
+    WMF = "image/x-wmf"
 
 
 class PNG_CHUNK_TYPE:
