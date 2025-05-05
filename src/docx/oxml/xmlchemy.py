@@ -704,19 +704,27 @@ class BaseOxmlElement(etree.ElementBase, metaclass=MetaOxmlElement):
         """
         return super().xpath(xpath_str, namespaces=nsmap)
 
-    def find(self, xpath_str: str) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
+    def find(self, xpath_str: str, namespaces: dict[str, str] | None = None) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
         """Override of `lxml` _Element.find() method.
 
         Provides standard Open XML namespace mapping (`nsmap`) in centralized location.
         """
-        return super().find(xpath_str, namespaces=nsmap)
 
-    def findall(self, xpath_str: str) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
+        if not namespaces:
+            namespaces = nsmap
+
+        return super().find(xpath_str, namespaces=namespaces)
+
+    def findall(self, xpath_str: str, namespaces: dict[str, str] | None = None) -> Any:  # pyright: ignore[reportIncompatibleMethodOverride]
         """Override of `lxml` _Element.findall() method.
 
         Provides standard Open XML namespace mapping (`nsmap`) in centralized location.
         """
-        return super().findall(xpath_str, namespaces=nsmap)
+
+        if not namespaces:
+            namespaces = nsmap
+
+        return super().findall(xpath_str, namespaces=namespaces)
 
     @property
     def _nsptag(self) -> str:
