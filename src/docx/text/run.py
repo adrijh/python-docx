@@ -9,6 +9,7 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_BREAK
 from docx.oxml.drawing import CT_Drawing
 from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
+from docx.oxml.text.run import CT_Sym
 from docx.shape import InlineShape
 from docx.shared import StoryChild
 from docx.styles.style import CharacterStyle
@@ -235,6 +236,19 @@ class Run(StoryChild):
     @underline.setter
     def underline(self, value: bool):
         self.font.underline = value
+
+    @property
+    def symbol(self) -> str | None:
+        return self._r.symbol
+
+    def add_symbol(self, code: str | None, unicode: str | None) -> None:
+        if unicode and not code:
+            code = CT_Sym.symbol_code_from_unicode(unicode)
+
+        if not code:
+            raise ValueError("code or unicode needs to be specified")
+
+        self._r.symbol = code
 
 
 class _Text:
