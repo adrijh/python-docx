@@ -43,6 +43,13 @@ class Paragraph(StoryChild):
             run.style = style
         return run
 
+    def add_symbol(self, code: str | None = None, unicode: str | None = None) -> Run:
+        r = self._p.add_r()
+        run = Run(r, self)
+        run.add_symbol(code, unicode)
+        return run
+
+
     @property
     def alignment(self) -> WD_PARAGRAPH_ALIGNMENT | None:
         """A member of the :ref:`WdParagraphAlignment` enumeration specifying the
