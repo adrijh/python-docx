@@ -22,6 +22,7 @@ oxml_parser = etree.XMLParser(remove_blank_text=True, resolve_entities=False)
 oxml_parser.set_element_class_lookup(element_class_lookup)
 
 nsmap = {
+    "a": NS.OPC_DRAWINGS,
     "ct": NS.OPC_CONTENT_TYPES,
     "pr": NS.OPC_RELATIONSHIPS,
     "r": NS.OFC_RELATIONSHIPS,

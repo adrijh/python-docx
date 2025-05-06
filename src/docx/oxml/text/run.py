@@ -560,4 +560,57 @@ SYMBOL_MAP = {
     "F0FF": "",
 }
 
-SYMBOL_MAP_INV = {v:k for k, v in SYMBOL_MAP.items()}
+SYMBOL_IGNORE = [
+    "F020",
+    "F021",
+    "F028",
+    "F029",
+    "F02A",
+    "F02B",
+    "F02C",
+    "F02D",
+    "F02E",
+    "F02F",
+    "F030",
+    "F031",
+    "F032",
+    "F033",
+    "F034",
+    "F035",
+    "F036",
+    "F037",
+    "F038",
+    "F039",
+    "F03A",
+    "F03B",
+    "F03C",
+    "F03D",
+    "F03E",
+    "F03F",
+    "F041",
+    "F042",
+    "F043",
+    "F045",
+    "F048",
+    "F049",
+    "F04B",
+    "F04D",
+    "F04E",
+    "F04F",
+    "F052",
+    "F054",
+    "F055",
+    "F05A",
+    "F07B",
+    "F07C",
+    "F07D",
+    "F07E",
+    "F07F",
+    "F0B2",
+]
+
+SYMBOL_MAP_INV = {
+    v:k for k, v
+    in SYMBOL_MAP.items()
+    if v and k not in SYMBOL_IGNORE
+}

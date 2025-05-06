@@ -263,6 +263,7 @@ class NAMESPACE:
     OPC_RELATIONSHIPS = "http://schemas.openxmlformats.org/package/2006/relationships"
     OPC_CONTENT_TYPES = "http://schemas.openxmlformats.org/package/2006/content-types"
     WML_MAIN = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    OPC_DRAWINGS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
 
 class RELATIONSHIP_TARGET_MODE:
