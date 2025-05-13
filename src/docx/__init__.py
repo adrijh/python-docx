@@ -29,6 +29,7 @@ from docx.parts.document import DocumentPart
 from docx.parts.hdrftr import FooterPart, HeaderPart
 from docx.parts.image import ImagePart
 from docx.parts.numbering import NumberingPart
+from docx.parts.ole import OlePart
 from docx.parts.settings import SettingsPart
 from docx.parts.styles import StylesPart
 
@@ -36,6 +37,10 @@ from docx.parts.styles import StylesPart
 def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
     if reltype == RT.IMAGE:
         return ImagePart
+
+    if reltype == RT.OLE_OBJECT:
+        return OlePart
+
     return None
 
 
