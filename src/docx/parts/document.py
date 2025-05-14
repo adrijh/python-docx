@@ -7,8 +7,15 @@ from typing import IO, TYPE_CHECKING, cast
 from docx.document import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.parts.comments import (
+    CommentsExtendedPart,
+    CommentsExtensiblePart,
+    CommentsIdsPart,
+    CommentsPart,
+)
 from docx.parts.hdrftr import FooterPart, HeaderPart
 from docx.parts.numbering import NumberingPart
+from docx.parts.people import PeoplePart
 from docx.parts.settings import SettingsPart
 from docx.parts.story import StoryPart
 from docx.parts.styles import StylesPart
@@ -147,3 +154,48 @@ class DocumentPart(StoryPart):
             styles_part = StylesPart.default(package)
             self.relate_to(styles_part, RT.STYLES)
             return styles_part
+
+    @lazyproperty
+    def _comments_part(self) -> CommentsPart:
+        try:
+            return cast(CommentsPart, self.part_related_by(RT.COMMENTS))
+        except KeyError:
+            comments_part = CommentsPart.new()
+            self.relate_to(comments_part, RT.COMMENTS)
+            return comments_part
+
+    @lazyproperty
+    def _comments_ids_part(self) -> CommentsIdsPart:
+        try:
+            return cast(CommentsIdsPart, self.part_related_by(RT.COMMENTS_IDS))
+        except KeyError:
+            comments_ids_part = CommentsIdsPart.new()
+            self.relate_to(comments_ids_part, RT.COMMENTS_IDS)
+            return comments_ids_part
+
+    @lazyproperty
+    def _comments_extended_part(self) -> CommentsExtendedPart:
+        try:
+            return cast(CommentsExtendedPart, self.part_related_by(RT.COMMENTS_EXTENDED))
+        except KeyError:
+            comments_extended_part = CommentsExtendedPart.new()
+            self.relate_to(comments_extended_part, RT.COMMENTS_EXTENDED)
+            return comments_extended_part
+
+    @lazyproperty
+    def _comments_extensible_part(self) -> CommentsExtensiblePart:
+        try:
+            return cast(CommentsExtensiblePart, self.part_related_by(RT.COMMENTS_EXTENSIBLE))
+        except KeyError:
+            comments_extensible_part = CommentsExtensiblePart.new()
+            self.relate_to(comments_extensible_part, RT.COMMENTS_EXTENSIBLE)
+            return comments_extensible_part
+
+    @lazyproperty
+    def _people_part(self) -> PeoplePart:
+        try:
+            return cast(PeoplePart, self.part_related_by(RT.PEOPLE))
+        except KeyError:
+            people_part = PeoplePart.new()
+            self.relate_to(people_part, RT.PEOPLE)
+            return people_part 

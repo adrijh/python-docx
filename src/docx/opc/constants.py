@@ -299,6 +299,18 @@ class RELATIONSHIP_TYPE:
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
         "/comments"
     )
+    COMMENTS_IDS = (
+        "http://schemas.microsoft.com/office/2016/09/relationships"
+        "/commentsIds"
+    )
+    COMMENTS_EXTENDED = (
+        "http://schemas.microsoft.com/office/2011/relationships"
+        "/commentsExtended"
+    )
+    COMMENTS_EXTENSIBLE = (
+        "http://schemas.microsoft.com/office/2018/08/relationships"
+        "/commentsExtensible"
+    )
     COMMENT_AUTHORS = (
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
         "/commentAuthors"
@@ -419,6 +431,9 @@ class RELATIONSHIP_TYPE:
     )
     PACKAGE = (
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships/package"
+    )
+    PEOPLE = (
+        "http://schemas.microsoft.com/office/2011/relationships/people"
     )
     PIVOT_CACHE_DEFINITION = (
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
