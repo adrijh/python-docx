@@ -108,6 +108,7 @@ class MIME_TYPE:
     EMF = "image/x-emf"
     SVG = "image/svg+xml"
     WMF = "image/x-wmf"
+    WEBP = "image/webp"
 
 
 class PNG_CHUNK_TYPE:
