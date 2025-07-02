@@ -12,6 +12,7 @@ from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_BREAK
 from docx.section import Section, Sections
 from docx.shared import ElementProxy, Emu
+from docx.text.block import SdtBlock
 
 if TYPE_CHECKING:
     import docx.types as t
@@ -122,7 +123,7 @@ class Document(ElementProxy):
         """
         return self._part.inline_shapes
 
-    def iter_inner_content(self) -> Iterator[Paragraph | Table]:
+    def iter_inner_content(self) -> Iterator[Paragraph | Table | SdtBlock]:
         """Generate each `Paragraph` or `Table` in this document in document order."""
         return self._body.iter_inner_content()
 

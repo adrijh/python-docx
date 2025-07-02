@@ -246,3 +246,16 @@ register_element_cls("w:spacing", CT_Spacing)
 register_element_cls("w:tab", CT_TabStop)
 register_element_cls("w:tabs", CT_TabStops)
 register_element_cls("w:widowControl", CT_OnOff)
+
+from .text.block import (
+    CT_Sdt,
+    CT_SdtContent,
+    CT_SdtDocPart,
+    CT_SdtPr,
+)
+
+register_element_cls("w:sdt", CT_Sdt)
+register_element_cls("w:sdtPr", CT_SdtPr)
+register_element_cls("w:sdtContent", CT_SdtContent)
+register_element_cls("w:docPartObj", CT_SdtDocPart)
+register_element_cls('w:docPartGallery', CT_String)

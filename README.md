@@ -4,10 +4,9 @@
 
 ## Fork
 This fork differs from the main repository in that it includes:
-- Emf image support
-- Svg image support
-- Jpeg (without APP headers) image support
-- Placeable WMF support
+- Add sdt element
+- Image support: Emf, Svg, WMF, raw Jpeg, Webp
+- Symbol to utf8 unicode when retrieving text from par or run
 
 ## Installation
 

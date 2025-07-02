@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, List
 
 from docx.oxml.section import CT_SectPr
+from docx.oxml.text.block import CT_Sdt
 from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrMore, ZeroOrOne
 
 if TYPE_CHECKING:
@@ -39,11 +40,13 @@ class CT_Body(BaseOxmlElement):
     get_or_add_sectPr: Callable[[], CT_SectPr]
     p_lst: List[CT_P]
     tbl_lst: List[CT_Tbl]
+    sdt_lst: List[CT_Sdt]
 
     _insert_tbl: Callable[[CT_Tbl], CT_Tbl]
 
     p = ZeroOrMore("w:p", successors=("w:sectPr",))
     tbl = ZeroOrMore("w:tbl", successors=("w:sectPr",))
+    sdt = ZeroOrMore("w:sdt", successors=("w:sectPr",))
     sectPr: CT_SectPr | None = ZeroOrOne(  # pyright: ignore[reportAssignmentType]
         "w:sectPr", successors=()
     )
@@ -79,10 +82,10 @@ class CT_Body(BaseOxmlElement):
             self.remove(content_elm)
 
     @property
-    def inner_content_elements(self) -> List[CT_P | CT_Tbl]:
-        """Generate all `w:p` and `w:tbl` elements in this document-body.
+    def inner_content_elements(self) -> List[CT_P | CT_Tbl | CT_Sdt]:
+        """Generate all `w:p`, `w:tbl` and `w:sdt` elements in this document-body.
 
         Elements appear in document order. Elements shaded by nesting in a `w:ins` or
         other "wrapper" element will not be included.
         """
-        return self.xpath("./w:p | ./w:tbl")
+        return self.xpath("./w:p | ./w:tbl | ./w:sdt")

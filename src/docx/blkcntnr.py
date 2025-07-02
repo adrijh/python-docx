@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Iterator
 from typing_extensions import TypeAlias
 
 from docx.oxml.table import CT_Tbl
+from docx.oxml.text.block import CT_Sdt
 from docx.oxml.text.paragraph import CT_P
 from docx.shared import StoryChild
 from docx.text.paragraph import Paragraph
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from docx.shared import Length
     from docx.styles.style import ParagraphStyle
     from docx.table import Table
+    from docx.text.block import SdtBlock
 
 BlockItemElement: TypeAlias = "CT_Body | CT_HdrFtr | CT_Tc"
 
@@ -70,12 +72,24 @@ class BlockItemContainer(StoryChild):
         self._element._insert_tbl(tbl)  #  # pyright: ignore[reportPrivateUsage]
         return Table(tbl, self)
 
-    def iter_inner_content(self) -> Iterator[Paragraph | Table]:
+    def iter_inner_content(self) -> Iterator[Paragraph | Table | SdtBlock]:
         """Generate each `Paragraph` or `Table` in this container in document order."""
-        from docx.table import Table
 
         for element in self._element.inner_content_elements:
-            yield (Paragraph(element, self) if isinstance(element, CT_P) else Table(element, self))
+            yield self._parse_content_elem(element)
+
+    def _parse_content_elem(self, elem: CT_P | CT_Tbl | CT_Sdt) -> Paragraph | Table | SdtBlock:
+        from docx.table import Table
+        from docx.text.block import SdtBlock
+
+        if isinstance(elem, CT_P):
+            return Paragraph(elem, self)
+
+        if isinstance(elem, CT_Tbl):
+            return Table(elem, self)
+
+        if isinstance(elem, CT_Sdt):
+            return SdtBlock(elem, self)
 
     @property
     def paragraphs(self):
