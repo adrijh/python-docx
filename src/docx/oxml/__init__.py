@@ -98,7 +98,7 @@ from .document import CT_Body, CT_Document  # noqa
 register_element_cls("w:body", CT_Body)
 register_element_cls("w:document", CT_Document)
 
-from .numbering import CT_Num, CT_Numbering, CT_NumLvl, CT_NumPr  # noqa
+from .numbering import CT_AbstractNum, CT_Lvl, CT_Num, CT_Numbering, CT_NumLvl, CT_NumPr  # noqa
 
 register_element_cls("w:abstractNumId", CT_DecimalNumber)
 register_element_cls("w:ilvl", CT_DecimalNumber)
@@ -108,6 +108,11 @@ register_element_cls("w:numId", CT_DecimalNumber)
 register_element_cls("w:numPr", CT_NumPr)
 register_element_cls("w:numbering", CT_Numbering)
 register_element_cls("w:startOverride", CT_DecimalNumber)
+register_element_cls("w:abstractNum", CT_AbstractNum)
+register_element_cls("w:lvl", CT_Lvl)
+register_element_cls("w:start", CT_DecimalNumber)
+register_element_cls("w:numFmt", CT_String)
+register_element_cls("w:lvlText", CT_String)
 
 from .section import (  # noqa
     CT_HdrFtr,

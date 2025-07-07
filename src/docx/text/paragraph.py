@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterator, List, cast
 
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml.numbering import CT_NumPr
 from docx.oxml.text.run import CT_R
 from docx.shared import StoryChild
 from docx.styles.style import ParagraphStyle
@@ -178,3 +179,10 @@ class Paragraph(StoryChild):
         """Return a newly created paragraph, inserted directly before this paragraph."""
         p = self._p.add_p_before()
         return Paragraph(p, self._parent)
+
+    @property
+    def numbering(self) -> CT_NumPr | None:
+        if self._element.pPr is None:
+            return None
+
+        return self._element.pPr.numPr

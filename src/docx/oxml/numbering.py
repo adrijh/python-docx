@@ -1,7 +1,7 @@
 """Custom element classes related to the numbering part."""
 
 from docx.oxml.parser import OxmlElement
-from docx.oxml.shared import CT_DecimalNumber
+from docx.oxml.shared import CT_DecimalNumber, CT_String
 from docx.oxml.simpletypes import ST_DecimalNumber
 from docx.oxml.xmlchemy import (
     BaseOxmlElement,
@@ -80,6 +80,7 @@ class CT_Numbering(BaseOxmlElement):
     numbering.xml."""
 
     num = ZeroOrMore("w:num", successors=("w:numIdMacAtCleanup",))
+    abstractNum = ZeroOrMore("w:abstractNum")
 
     def add_num(self, abstractNum_id):
         """Return a newly added CT_Num (<w:num>) element referencing the abstract
@@ -107,3 +108,14 @@ class CT_Numbering(BaseOxmlElement):
             if num not in num_ids:
                 break
         return num
+
+class CT_AbstractNum(BaseOxmlElement):
+    abstractNumId = RequiredAttribute("w:abstractNumId", ST_DecimalNumber)
+    lvl = ZeroOrMore("w:lvl")
+
+class CT_Lvl(BaseOxmlElement):
+    ilvl = RequiredAttribute("w:ilvl", ST_DecimalNumber)
+    start: CT_String | None = OneAndOnlyOne("w:start")
+    numFmt = OneAndOnlyOne("w:numFmt")
+    lvlText = OneAndOnlyOne("w:lvlText")
+    pPr = OneAndOnlyOne("w:pPr")

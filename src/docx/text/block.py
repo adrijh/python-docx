@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 
 from docx.oxml.text.block import CT_Sdt
 from docx.shared import StoryChild
