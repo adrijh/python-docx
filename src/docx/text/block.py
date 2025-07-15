@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from docx.oxml.text.block import CT_Sdt
 from docx.shared import StoryChild
+from docx.table import Table
 from docx.text.paragraph import Paragraph
 
 if TYPE_CHECKING:
@@ -22,6 +23,10 @@ class SdtBlock(StoryChild):
     @property
     def paragraphs(self) -> list[Paragraph]:
         return [Paragraph(p, self) for p in self._sdt.content.p_lst]
+
+    @property
+    def tables(self) -> list[Table]:
+        return [Table(t, self) for t in self._sdt.content.tbl_lst]
 
     @property
     def gallery(self) -> str | None:

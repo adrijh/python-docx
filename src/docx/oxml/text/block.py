@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import List
 
 from docx.oxml.shared import CT_String
+from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
 from docx.oxml.xmlchemy import (
     BaseOxmlElement,
@@ -28,6 +29,9 @@ class CT_SdtContent(BaseOxmlElement):
 
     p_lst = List[CT_P]
     p = ZeroOrMore("w:p")
+
+    tbl_lst = List[CT_Tbl]
+    tbl = ZeroOrMore("w:tbl")
 
     @property
     def inner_content_elements(self) -> List[CT_P]:
