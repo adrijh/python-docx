@@ -1,4 +1,4 @@
-"""Custom element classes related to hyperlinks (CT_Hyperlink)."""
+"""Custom element classes related to fields (CT_FldSimple)."""
 
 from __future__ import annotations
 
