@@ -54,10 +54,8 @@ docs = [
 ]
 
 [project.urls]
-Changelog = "https://github.com/python-openxml/python-docx/blob/master/HISTORY.rst"
-Documentation = "https://python-docx.readthedocs.org/en/latest/"
-Homepage = "https://github.com/python-openxml/python-docx"
-Repository = "https://github.com/python-openxml/python-docx"
+Homepage = "https://github.com/adrijh/python-docx"
+Repository = "https://github.com/adrijh/python-docx"
 
 [tool.black]
 line-length = 100
