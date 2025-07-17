@@ -28,7 +28,7 @@ class Paragraph(StoryChild):
         super(Paragraph, self).__init__(parent)
         self._p = self._element = p
 
-    def restart_numbering(self):
+    def restart_numbering(self, start: int = 1):
         """
         Restarting the numbering of paragraph
 
@@ -48,7 +48,7 @@ class Paragraph(StoryChild):
 
         # Add abstract number to numbering part and reset
         num = self.part.numbering_part.element.add_num(abstract_num_id)
-        num.add_lvlOverride(ilvl=0).add_startOverride(1)
+        num.add_lvlOverride(ilvl=0).add_startOverride(start)
 
         # Get or add elements to paragraph
         p_pr = self._p.get_or_add_pPr()

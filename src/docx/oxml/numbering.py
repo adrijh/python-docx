@@ -306,13 +306,3 @@ class CT_Numbering(BaseOxmlElement):
                 break
         return num
 
-class CT_AbstractNum(BaseOxmlElement):
-    abstractNumId = RequiredAttribute("w:abstractNumId", ST_DecimalNumber)
-    lvl = ZeroOrMore("w:lvl")
-
-class CT_Lvl(BaseOxmlElement):
-    ilvl = RequiredAttribute("w:ilvl", ST_DecimalNumber)
-    start: CT_String | None = OneAndOnlyOne("w:start")
-    numFmt = OneAndOnlyOne("w:numFmt")
-    lvlText = OneAndOnlyOne("w:lvlText")
-    pPr = OneAndOnlyOne("w:pPr")
