@@ -24,3 +24,8 @@ class CT_FldSimple(BaseOxmlElement):
         `CT_FldSimple` can store text as one or more `w:r` children.
         """
         return "".join(r.text for r in self.xpath("w:r"))
+
+    @property
+    def inner_content_elements(self) -> List[CT_R]:
+        """Run children of the `w:fldSimple` element, in document order."""
+        return self.xpath("./w:r")

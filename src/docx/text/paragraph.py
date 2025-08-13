@@ -6,9 +6,12 @@ from typing import TYPE_CHECKING, Iterator, List, cast
 
 from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml.numbering import CT_NumPr
+from docx.oxml.text.field import CT_FldSimple
+from docx.oxml.text.hyperlink import CT_Hyperlink
 from docx.oxml.text.run import CT_R
 from docx.shared import StoryChild
 from docx.styles.style import ParagraphStyle
+from docx.text.field import Field
 from docx.text.hyperlink import Hyperlink
 from docx.text.pagebreak import RenderedPageBreak
 from docx.text.parfmt import ParagraphFormat
@@ -129,7 +132,7 @@ class Paragraph(StoryChild):
             paragraph.style = style
         return paragraph
 
-    def iter_inner_content(self) -> Iterator[Run | Hyperlink]:
+    def iter_inner_content(self) -> Iterator[Run | Hyperlink | Field]:
         """Generate the runs and hyperlinks in this paragraph, in the order they appear.
 
         The content in a paragraph consists of both runs and hyperlinks. This method
@@ -137,12 +140,15 @@ class Paragraph(StoryChild):
         precise position of the hyperlink within the paragraph text is important. Note
         that a hyperlink itself contains runs.
         """
-        for r_or_hlink in self._p.inner_content_elements:
-            yield (
-                Run(r_or_hlink, self)
-                if isinstance(r_or_hlink, CT_R)
-                else Hyperlink(r_or_hlink, self)
-            )
+        for elem in self._p.inner_content_elements:
+            if isinstance(elem, CT_R):
+                yield Run(elem, self)
+
+            if isinstance(elem, CT_Hyperlink):
+                yield Hyperlink(elem, self)
+
+            if isinstance(elem, CT_FldSimple):
+                yield Field(elem, self)
 
     @property
     def paragraph_format(self):
