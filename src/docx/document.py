@@ -40,7 +40,7 @@ class Document(ElementProxy):
         self._part = part
         self.__body = None
 
-    def configure_styles_for_numbered_lists(self):
+    def configure_styles_for_numbered_lists(self, style_name: str):
         """Configures the underlying document such that you
         can include multiple numbered lists with correct numbers.
 
@@ -57,22 +57,34 @@ class Document(ElementProxy):
 
         formats = {
             0: "decimal",
-            1: "decimal",
-            2: "decimal",
+            # 1: "decimal",
+            # 2: "decimal",
         }
         text_fmts = {
             0: "%1.",
-            1: "%1.%2.",
-            2: "%1.%2.%3.",
+            # 1: "%1.%2.",
+            # 2: "%1.%2.%3.",
         }
-        starts = {0: 1, 1: 1, 2: 1}
-        restarts = {0: False, 1: False, 2: 1}
-        hosts = {0: "List Number", 1: "List Number 2", 2: "List Number 3"}
+        starts = {
+            0: 1,
+            # 1: 1,
+            # 2: 1,
+        }
+        restarts = {
+            0: False,
+            # 1: False,
+            # 2: 1,
+        }
+        hosts = {
+            0: style_name,
+            # 1: "List Number 2",
+            # 2: "List Number 3",
+        }
 
         num_xml.abstractNum_lst[-1].addnext(l)
         nNum = num_xml.add_num(next_abstract_id)
 
-        for i in range(3):
+        for i in range(1):
             lvl = l.add_lvl()
             lvl.ilvl = i
             lvl.add_start().val = starts[i]
