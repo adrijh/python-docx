@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 from typing_extensions import Protocol
 
 if TYPE_CHECKING:
     from docx.opc.part import XmlPart
     from docx.parts.story import StoryPart
+
+
+class DocumentOpts(TypedDict):
+    ignore_crc: NotRequired[bool]
 
 
 class ProvidesStoryPart(Protocol):

@@ -8,6 +8,7 @@ This fork differs from the main repository in that it includes:
 - Image support: Emf, Svg, WMF, raw Jpeg, Webp
 - Symbol to utf8 unicode when retrieving text from par or run
 - Add basic fldSimple element support
+- Option to ignore CRC errors when reading docx
 
 ## Installation
 

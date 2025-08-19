@@ -1,16 +1,18 @@
 """Provides a general interface to a `physical` OPC package, such as a zip file."""
 
 import os
-from zipfile import ZIP_DEFLATED, ZipFile, is_zipfile
+from typing import Unpack
+from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile, is_zipfile
 
 from docx.opc.exceptions import PackageNotFoundError
 from docx.opc.packuri import CONTENT_TYPES_URI
+from docx.types import DocumentOpts
 
 
 class PhysPkgReader:
     """Factory for physical package reader objects."""
 
-    def __new__(cls, pkg_file):
+    def __new__(cls, pkg_file, **kwargs: Unpack[DocumentOpts]):
         # if `pkg_file` is a string, treat it as a path
         if isinstance(pkg_file, str):
             if os.path.isdir(pkg_file):
@@ -36,7 +38,7 @@ class _DirPkgReader(PhysPkgReader):
     """Implements |PhysPkgReader| interface for an OPC package extracted into a
     directory."""
 
-    def __init__(self, path):
+    def __init__(self, path, **kwargs):
         """`path` is the path to a directory containing an expanded package."""
         super(_DirPkgReader, self).__init__()
         self._path = os.path.abspath(path)
@@ -71,16 +73,25 @@ class _DirPkgReader(PhysPkgReader):
 class _ZipPkgReader(PhysPkgReader):
     """Implements |PhysPkgReader| interface for a zip file OPC package."""
 
-    def __init__(self, pkg_file):
+    def __init__(self, pkg_file, **kwargs: Unpack[DocumentOpts]):
         super(_ZipPkgReader, self).__init__()
         self._zipf = ZipFile(pkg_file, "r")
+        self._ignore_crc = kwargs.get("ignore_crc", False)
 
     def blob_for(self, pack_uri):
         """Return blob corresponding to `pack_uri`.
 
         Raises |ValueError| if no matching member is present in zip archive.
         """
-        return self._zipf.read(pack_uri.membername)
+        try:
+            return self._zipf.read(pack_uri.membername)
+        except BadZipFile as e:
+            if "Bad CRC-32" not in str(e) or not self._ignore_crc:
+                raise e
+
+            with self._zipf.open(pack_uri.membername) as f:
+                f._expected_crc = None
+                return f.read()
 
     def close(self):
         """Close the zip archive, releasing any resources it is using."""

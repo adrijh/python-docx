@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Iterator, cast
+from typing import IO, TYPE_CHECKING, Iterator, Unpack, cast
 
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.packuri import PACKAGE_URI, PackURI
@@ -12,6 +12,7 @@ from docx.opc.pkgreader import PackageReader
 from docx.opc.pkgwriter import PackageWriter
 from docx.opc.rel import Relationships
 from docx.shared import lazyproperty
+from docx.types import DocumentOpts
 
 if TYPE_CHECKING:
     from docx.opc.coreprops import CoreProperties
@@ -122,9 +123,9 @@ class OpcPackage:
                 return PackURI(candidate_partname)
 
     @classmethod
-    def open(cls, pkg_file: str | IO[bytes]) -> OpcPackage:
+    def open(cls, pkg_file: str | IO[bytes], **kwargs: Unpack[DocumentOpts]) -> OpcPackage:
         """Return an |OpcPackage| instance loaded with the contents of `pkg_file`."""
-        pkg_reader = PackageReader.from_file(pkg_file)
+        pkg_reader = PackageReader.from_file(pkg_file, **kwargs)
         package = cls()
         Unmarshaller.unmarshal(pkg_reader, package, PartFactory)
         return package
