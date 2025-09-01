@@ -52,11 +52,12 @@ class CT_Sym(BaseOxmlElement):
         if not is_underline:
             return text
 
-        return re.sub(
-            r'<|>',
-            lambda m: UNDERLINE_REPL_MAP[str(m.group(0))],
-            text,
-        )
+        if text.strip() == '<':
+            return UNDERLINE_REPL_MAP['<']
+        if text.strip() == '>':
+            return UNDERLINE_REPL_MAP['>']
+        
+        return text
 
     @staticmethod
     def is_underline(underline: CT_Underline | bool | None) -> bool:
