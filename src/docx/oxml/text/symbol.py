@@ -52,10 +52,9 @@ class CT_Sym(BaseOxmlElement):
         if not is_underline:
             return text
 
-        if text.strip() == '<':
-            return UNDERLINE_REPL_MAP['<']
-        if text.strip() == '>':
-            return UNDERLINE_REPL_MAP['>']
+        stripped = text.strip()
+        if stripped in UNDERLINE_REPL_MAP:
+            return UNDERLINE_REPL_MAP[stripped]
         
         return text
 

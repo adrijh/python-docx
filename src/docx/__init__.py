@@ -13,7 +13,7 @@ from docx.api import Document
 if TYPE_CHECKING:
     from docx.opc.part import Part
 
-__version__ = "1.2.5"
+__version__ = "1.2.6"
 __fork__ = "adrijh/python-docx"
 
 
