@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterator, List, cast
+from typing import TYPE_CHECKING, Iterator, List, TypeAlias, cast
 
 from docx.enum.style import WD_STYLE_TYPE
+from docx.math import Math, MathPara
+from docx.oxml.math import CT_OMath, CT_OMathPara
 from docx.oxml.numbering import CT_NumPr
 from docx.oxml.text.field import CT_FldSimple
 from docx.oxml.text.hyperlink import CT_Hyperlink
@@ -22,6 +24,9 @@ if TYPE_CHECKING:
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
     from docx.oxml.text.paragraph import CT_P
     from docx.styles.style import CharacterStyle
+
+
+ParElem: TypeAlias = Run | Hyperlink | Field | Math | MathPara
 
 
 class Paragraph(StoryChild):
@@ -132,7 +137,7 @@ class Paragraph(StoryChild):
             paragraph.style = style
         return paragraph
 
-    def iter_inner_content(self) -> Iterator[Run | Hyperlink | Field]:
+    def iter_inner_content(self) -> Iterator[ParElem]:
         """Generate the runs and hyperlinks in this paragraph, in the order they appear.
 
         The content in a paragraph consists of both runs and hyperlinks. This method
@@ -149,6 +154,12 @@ class Paragraph(StoryChild):
 
             if isinstance(elem, CT_FldSimple):
                 yield Field(elem, self)
+
+            if isinstance(elem, CT_OMath):
+                yield Math(elem, self)
+
+            if isinstance(elem, CT_OMathPara):
+                yield MathPara(elem, self)
 
     @property
     def paragraph_format(self):

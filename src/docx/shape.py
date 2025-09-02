@@ -5,10 +5,14 @@ A shape is a visual object that appears on the drawing layer of a document.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type, TypeVar
 
-from docx.enum.shape import WD_INLINE_SHAPE
+from docx.enum.shape import (
+    WD_ANCHORED_SHAPE_TYPE,
+    WD_INLINE_SHAPE_TYPE,
+)
 from docx.oxml.ns import nsmap
+from docx.oxml.shape import CT_Anchor, CT_GraphicalObjectData
 from docx.shared import Parented
 
 if TYPE_CHECKING:
@@ -16,6 +20,30 @@ if TYPE_CHECKING:
     from docx.oxml.shape import CT_Inline
     from docx.parts.story import StoryPart
     from docx.shared import Length
+
+
+T = TypeVar("T", WD_ANCHORED_SHAPE_TYPE, WD_INLINE_SHAPE_TYPE)
+
+def get_drawing_type(graphic_data: CT_GraphicalObjectData, enum_type: Type[T]) -> T:
+    uri = graphic_data.uri
+
+    if uri == nsmap["pic"]:
+        blip = graphic_data.pic.blipFill.blip
+        if blip.link is not None:
+            return enum_type.LINKED_PICTURE
+
+        return enum_type.PICTURE
+
+    if uri == nsmap["c"]:
+        return enum_type.CHART
+    if uri == nsmap["dgm"]:
+        return enum_type.SMART_ART
+    if uri == nsmap["wps"]:
+        return enum_type.SHAPE
+    if uri == nsmap["wpg"]:
+        return enum_type.SHAPE_GROUP
+
+    return enum_type.NOT_IMPLEMENTED
 
 
 class InlineShapes(Parented):
@@ -76,18 +104,10 @@ class InlineShape:
 
         Read-only.
         """
-        graphicData = self._inline.graphic.graphicData
-        uri = graphicData.uri
-        if uri == nsmap["pic"]:
-            blip = graphicData.pic.blipFill.blip
-            if blip.link is not None:
-                return WD_INLINE_SHAPE.LINKED_PICTURE
-            return WD_INLINE_SHAPE.PICTURE
-        if uri == nsmap["c"]:
-            return WD_INLINE_SHAPE.CHART
-        if uri == nsmap["dgm"]:
-            return WD_INLINE_SHAPE.SMART_ART
-        return WD_INLINE_SHAPE.NOT_IMPLEMENTED
+        return get_drawing_type(
+            graphic_data=self._inline.graphic.graphicData,
+            enum_type=WD_INLINE_SHAPE_TYPE,
+        )
 
     @property
     def width(self):
@@ -101,3 +121,53 @@ class InlineShape:
     def width(self, cx: Length):
         self._inline.extent.cx = cx
         self._inline.graphic.graphicData.pic.spPr.cx = cx
+
+
+class AnchoredShape:
+    """Proxy for an ``<wp:anchor>`` element, representing the container for an inline
+    graphical object."""
+
+    def __init__(self, anchor: CT_Anchor):
+        super(AnchoredShape, self).__init__()
+        self._anchor = anchor
+
+    @property
+    def height(self) -> Length:
+        """Read/write.
+
+        The display height of this inline shape as an |Emu| instance.
+        """
+        return self._anchor.extent.cy
+
+    @height.setter
+    def height(self, cy: Length):
+        self._anchor.extent.cy = cy
+        self._anchor.graphic.graphicData.pic.spPr.cy = cy
+
+    @property
+    def type(self) -> WD_ANCHORED_SHAPE_TYPE:
+        """The type of this inline shape as a member of
+        ``docx.enum.shape.WD_ANCHORED_SHAPE``, e.g. ``LINKED_PICTURE``.
+
+        Read-only.
+        """
+        return get_drawing_type(
+            graphic_data=self._anchor.graphic.graphicData,
+            enum_type=WD_ANCHORED_SHAPE_TYPE,
+        )
+
+    @property
+    def width(self):
+        """Read/write.
+
+        The display width of this inline shape as an |Emu| instance.
+        """
+        return self._anchor.extent.cx
+
+    @width.setter
+    def width(self, cx: Length):
+        self._anchor.extent.cx = cx
+        self._anchor.graphic.graphicData.pic.spPr.cx = cx
+
+    def to_inline(self) -> InlineShape:
+        return InlineShape(self._anchor.to_inline())

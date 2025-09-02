@@ -5,7 +5,9 @@ This including registering custom element classes corresponding to Open XML elem
 
 from __future__ import annotations
 
-from docx.oxml.drawing import CT_Drawing
+from docx.oxml.alternate import CT_AlternateContent, CT_Choice, CT_Fallback
+from docx.oxml.drawing import CT_Drawing, CT_Pict
+from docx.oxml.math import CT_Fraction, CT_MathRun, CT_OMath, CT_OMathPara, CT_Subscript
 from docx.oxml.parser import OxmlElement, parse_xml, register_element_cls
 from docx.oxml.shape import (
     CT_Anchor,
@@ -18,12 +20,14 @@ from docx.oxml.shape import (
     CT_Picture,
     CT_PictureNonVisual,
     CT_Point2D,
+    CT_PosH,
     CT_PositiveSize2D,
+    CT_PosV,
     CT_ShapeProperties,
     CT_Transform2D,
 )
+from docx.oxml.shared import CT_DecimalNumber, CT_LongHexNumber, CT_OnOff, CT_String
 from docx.oxml.text.field import CT_FldSimple
-from docx.oxml.shared import CT_DecimalNumber, CT_OnOff, CT_String, CT_LongHexNumber
 from docx.oxml.text.hyperlink import CT_Hyperlink
 from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
 from docx.oxml.text.run import (
@@ -42,6 +46,13 @@ from docx.oxml.text.run import (
 __all__ = ["OxmlElement", "parse_xml"]
 
 # ---------------------------------------------------------------------------
+# AlternateContent related elements
+
+register_element_cls("mc:AlternateContent", CT_AlternateContent)
+register_element_cls("mc:Choice", CT_Choice)
+register_element_cls("mc:Fallback", CT_Fallback)
+
+# ---------------------------------------------------------------------------
 # DrawingML-related elements
 
 register_element_cls("a:blip", CT_Blip)
@@ -49,6 +60,7 @@ register_element_cls("a:ext", CT_PositiveSize2D)
 register_element_cls("a:graphic", CT_GraphicalObject)
 register_element_cls("a:graphicData", CT_GraphicalObjectData)
 register_element_cls("a:off", CT_Point2D)
+register_element_cls("wp:simplePos", CT_Point2D)
 register_element_cls("a:xfrm", CT_Transform2D)
 register_element_cls("pic:blipFill", CT_BlipFillProperties)
 register_element_cls("pic:cNvPr", CT_NonVisualDrawingProps)
@@ -56,10 +68,14 @@ register_element_cls("pic:nvPicPr", CT_PictureNonVisual)
 register_element_cls("pic:pic", CT_Picture)
 register_element_cls("pic:spPr", CT_ShapeProperties)
 register_element_cls("w:drawing", CT_Drawing)
+register_element_cls("w:pict", CT_Pict)
 register_element_cls("wp:anchor", CT_Anchor)
 register_element_cls("wp:docPr", CT_NonVisualDrawingProps)
 register_element_cls("wp:extent", CT_PositiveSize2D)
 register_element_cls("wp:inline", CT_Inline)
+register_element_cls("wp:anchor", CT_Anchor)
+register_element_cls("wp:positionH", CT_PosH)
+register_element_cls("wp:positionV", CT_PosV)
 
 # ---------------------------------------------------------------------------
 # hyperlink-related elements
@@ -81,10 +97,16 @@ register_element_cls("w:noBreakHyphen", CT_NoBreakHyphen)
 register_element_cls("w:ptab", CT_PTab)
 register_element_cls("w:r", CT_R)
 register_element_cls("w:t", CT_Text)
+register_element_cls("w:sym", CT_Sym)
 
 # ---------------------------------------------------------------------------
 # math related mappings
-register_element_cls("w:sym", CT_Sym)
+register_element_cls("m:oMathPara", CT_OMathPara)
+register_element_cls("m:oMath", CT_OMath)
+register_element_cls("m:f", CT_Fraction)
+register_element_cls("m:sSub", CT_Subscript)
+register_element_cls("m:r", CT_MathRun)
+register_element_cls("m:e", CT_Sym)
 
 # ---------------------------------------------------------------------------
 # header/footer-related mappings
@@ -105,18 +127,18 @@ register_element_cls("w:body", CT_Body)
 register_element_cls("w:document", CT_Document)
 
 from .numbering import (
+    CT_AbstractNum,
+    CT_LevelSuffix,
+    CT_LevelText,
+    CT_Lvl,
+    CT_LvlLegacy,
+    CT_MultiLevelType,
     CT_Num,
     CT_Numbering,
-    CT_NumLvl,
-    CT_NumPr,
-    CT_LevelSuffix,
     CT_NumFmt,
-    CT_MultiLevelType,
-    CT_LvlLegacy,
-    CT_LevelText,
+    CT_NumLvl,
     CT_NumPicBullet,
-    CT_Lvl,
-    CT_AbstractNum,
+    CT_NumPr,
 )
 
 register_element_cls("w:abstractNumId", CT_DecimalNumber)

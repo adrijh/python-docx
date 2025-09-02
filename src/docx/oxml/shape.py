@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from docx.oxml.ns import nsdecls
+from docx.oxml.ns import nsdecls, qn
 from docx.oxml.parser import parse_xml
 from docx.oxml.simpletypes import (
     ST_Coordinate,
@@ -28,6 +28,56 @@ if TYPE_CHECKING:
 
 class CT_Anchor(BaseOxmlElement):
     """`<wp:anchor>` element, container for a "floating" shape."""
+
+    simplePos = ZeroOrOne("wp:simplePos")
+    positionH = ZeroOrOne("wp:positionH") 
+    positionV = ZeroOrOne("wp:positionV")
+    extent = ZeroOrOne("wp:extent")
+    effectExtent = ZeroOrOne("wp:effectExtent")
+    
+    wrapNone = ZeroOrOne("wp:wrapNone")
+    wrapSquare = ZeroOrOne("wp:wrapSquare")
+    wrapTight = ZeroOrOne("wp:wrapTight")
+    wrapThrough = ZeroOrOne("wp:wrapThrough")
+    wrapTopAndBottom = ZeroOrOne("wp:wrapTopAndBottom")
+    
+    docPr = OneAndOnlyOne("wp:docPr")
+    cNvGraphicFramePr = ZeroOrOne("wp:cNvGraphicFramePr")
+    graphic = OneAndOnlyOne("a:graphic")
+    
+    sizeRelH = ZeroOrOne("wp14:sizeRelH")
+    sizeRelV = ZeroOrOne("wp14:sizeRelV")
+
+
+    def to_inline(self) -> CT_Inline:
+        """
+        Convert this <wp:anchor> element into a <wp:inline> element.
+
+        Returns a new CT_Inline instance with the same child elements
+        relevant for rendering, stripped of floating/anchoring attributes.
+        """
+        inline_xml = parse_xml(self.xml)
+        inline_xml.tag = qn("wp:inline")
+
+        for attr in [
+            "simplePos", "relativeHeight", "behindDoc",
+            "locked", "layoutInCell", "allowOverlap"
+        ]:
+            if attr in inline_xml.attrib:
+                del inline_xml.attrib[attr]
+
+        for child_tag in [
+            "wp:positionH", "wp:positionV",
+            "wp:wrapNone", "wp:wrapSquare",
+            "wp:wrapTight", "wp:wrapThrough",
+            "wp:wrapTopAndBottom",
+            "wp14:sizeRelH", "wp14:sizeRelV",
+        ]:
+            elem = inline_xml.find(child_tag)
+            if elem is not None:
+                inline_xml.remove(elem)
+
+        return CT_Inline(inline_xml)
 
 
 class CT_Blip(BaseOxmlElement):
@@ -189,7 +239,7 @@ class CT_PictureNonVisual(BaseOxmlElement):
 
 
 class CT_Point2D(BaseOxmlElement):
-    """Used for ``<a:off>`` element, and perhaps others.
+    """Used for ``<a:off>`` and ``<wp:simplePos>``element, and perhaps others.
 
     Specifies an x, y coordinate (point).
     """
@@ -300,3 +350,31 @@ class CT_Transform2D(BaseOxmlElement):
     def cy(self, value):
         ext = self.get_or_add_ext()
         ext.cy = value
+
+
+class CT_PosH(BaseOxmlElement):
+    """`<wp:positionH>` element."""
+    posOffset = ZeroOrOne("wp:posOffset")
+    align = ZeroOrOne("wp:align")
+    
+    @property
+    def relativeFrom(self):
+        return self.get("relativeFrom")
+    
+    @relativeFrom.setter
+    def relativeFrom(self, value):
+        self.set("relativeFrom", value)
+
+
+class CT_PosV(BaseOxmlElement):
+    """`<wp:positionV>` element."""
+    posOffset = ZeroOrOne("wp:posOffset")
+    align = ZeroOrOne("wp:align")
+    
+    @property
+    def relativeFrom(self):
+        return self.get("relativeFrom")
+    
+    @relativeFrom.setter
+    def relativeFrom(self, value):
+        self.set("relativeFrom", value)

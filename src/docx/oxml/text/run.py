@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Iterator, List
+from typing import TYPE_CHECKING, Callable, Iterator, List, TypeAlias
 
+from docx.oxml.alternate import CT_AlternateContent
 from docx.oxml.drawing import CT_Drawing
 from docx.oxml.ns import qn
 from docx.oxml.simpletypes import ST_BrClear, ST_BrType
 from docx.oxml.text.font import CT_RPr
+from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
 from docx.oxml.text.symbol import CT_Sym
 from docx.oxml.xmlchemy import (
     BaseOxmlElement,
@@ -19,12 +21,12 @@ from docx.shared import TextAccumulator
 
 if TYPE_CHECKING:
     from docx.oxml.shape import CT_Anchor, CT_Inline
-    from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
     from docx.oxml.text.parfmt import CT_TabStop
 
 # ------------------------------------------------------------------------------------
 # Run-level elements
 
+R_Elem: TypeAlias = str | CT_Drawing | CT_LastRenderedPageBreak | CT_AlternateContent | CT_Sym
 
 class CT_R(BaseOxmlElement):
     """`<w:r>` element, containing the properties and text for a run."""
@@ -40,6 +42,7 @@ class CT_R(BaseOxmlElement):
     br = ZeroOrMore("w:br")
     cr = ZeroOrMore("w:cr")
     drawing = ZeroOrMore("w:drawing")
+    alt = ZeroOrMore("mc:AlternateContent")
     t = ZeroOrMore("w:t")
     tab = ZeroOrMore("w:tab")
     sym: CT_Sym | None = ZeroOrOne("w:sym") # pyright: ignore[reportAssignmentType]
@@ -67,13 +70,19 @@ class CT_R(BaseOxmlElement):
             self.remove(e)
 
     @property
-    def inner_content_items(self) -> List[str | CT_Drawing | CT_LastRenderedPageBreak]:
+    def inner_content_items(self) -> List[R_Elem]:
         """Text of run, possibly punctuated by `w:lastRenderedPageBreak` elements."""
         from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
 
         accum = TextAccumulator()
+        non_text_types = (
+            CT_Drawing,
+            CT_LastRenderedPageBreak,
+            CT_AlternateContent,
+            CT_Sym,
+        )
 
-        def iter_items() -> Iterator[str | CT_Drawing | CT_LastRenderedPageBreak]:
+        def iter_items() -> Iterator[R_Elem]:
             for e in self.xpath(
                 "w:br"
                 " | w:cr"
@@ -83,8 +92,10 @@ class CT_R(BaseOxmlElement):
                 " | w:ptab"
                 " | w:t"
                 " | w:tab"
+                " | mc:AlternateContent"
+                " | w:sym"
             ):
-                if isinstance(e, (CT_Drawing, CT_LastRenderedPageBreak)):
+                if isinstance(e, non_text_types):
                     yield from accum.pop()
                     yield e
                 else:
