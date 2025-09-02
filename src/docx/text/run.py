@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Iterator, cast
+from typing import IO, TYPE_CHECKING, Iterator, TypeAlias, cast
 
-from docx.drawing import Drawing
+from docx.drawing import Drawing, Picture
+from docx.drawing.alternate import AlternateContent
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_BREAK
-from docx.oxml.drawing import CT_Drawing
+from docx.oxml.alternate import CT_AlternateContent
+from docx.oxml.drawing import CT_Drawing, CT_Pict
 from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
 from docx.oxml.text.run import CT_Sym
 from docx.shape import InlineShape
@@ -15,6 +17,7 @@ from docx.shared import StoryChild
 from docx.styles.style import CharacterStyle
 from docx.text.font import Font
 from docx.text.pagebreak import RenderedPageBreak
+from docx.text.symbol import Symbol
 
 if TYPE_CHECKING:
     import docx.types as t
@@ -22,6 +25,7 @@ if TYPE_CHECKING:
     from docx.oxml.text.run import CT_R, CT_Text
     from docx.shared import Length
 
+RunElem: TypeAlias = str | RenderedPageBreak | Drawing | Picture | Symbol
 
 class Run(StoryChild):
     """Proxy object wrapping `<w:r>` element.
@@ -151,7 +155,7 @@ class Run(StoryChild):
     def italic(self, value: bool | None):
         self.font.italic = value
 
-    def iter_inner_content(self) -> Iterator[str | Drawing | RenderedPageBreak]:
+    def iter_inner_content(self) -> Iterator[RunElem]:
         """Generate the content-items in this run in the order they appear.
 
         NOTE: only content-types currently supported by `python-docx` are generated. In
@@ -169,10 +173,24 @@ class Run(StoryChild):
         for item in self._r.inner_content_items:
             if isinstance(item, str):
                 yield item
-            elif isinstance(item, CT_LastRenderedPageBreak):
+
+            if isinstance(item, CT_LastRenderedPageBreak):
                 yield RenderedPageBreak(item, self)
-            elif isinstance(item, CT_Drawing):  # pyright: ignore[reportUnnecessaryIsInstance]
+
+            if isinstance(item, CT_Drawing):
                 yield Drawing(item, self)
+
+            if isinstance(item, CT_Pict):
+                yield Picture(item, self)
+
+            if isinstance(item, CT_Sym):
+                yield Symbol(item, self)
+
+            if isinstance(item, CT_AlternateContent):
+                alt_content = AlternateContent(item, self)
+                for choice in alt_content.choices:
+                    for choice_elem in choice.iter_inner_content():
+                        yield choice_elem
 
     @property
     def style(self) -> CharacterStyle:

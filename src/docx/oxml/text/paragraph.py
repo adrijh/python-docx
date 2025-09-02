@@ -4,19 +4,23 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, List, cast
+from typing import TYPE_CHECKING, Callable, List, TypeAlias, cast
 
+from docx.oxml.math import CT_OMath, CT_OMathPara
 from docx.oxml.parser import OxmlElement
 from docx.oxml.text.field import CT_FldSimple
+from docx.oxml.text.hyperlink import CT_Hyperlink
+from docx.oxml.text.run import CT_R
 from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrMore, ZeroOrOne
 
 if TYPE_CHECKING:
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
     from docx.oxml.section import CT_SectPr
-    from docx.oxml.text.hyperlink import CT_Hyperlink
     from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
     from docx.oxml.text.parfmt import CT_PPr
-    from docx.oxml.text.run import CT_R
+
+
+P_Elem: TypeAlias = CT_R | CT_Hyperlink | CT_FldSimple | CT_OMathPara | CT_OMath
 
 
 class CT_P(BaseOxmlElement):
@@ -32,6 +36,8 @@ class CT_P(BaseOxmlElement):
     hyperlink = ZeroOrMore("w:hyperlink")
     r = ZeroOrMore("w:r")
     fldSimple = ZeroOrMore("w:fldSimple")
+    oMathPara = ZeroOrMore("m:oMathPara")
+    oMath = ZeroOrMore("m:oMath")
 
     def add_p_before(self) -> CT_P:
         """Return a new `<w:p>` element inserted directly prior to this one."""
@@ -58,9 +64,15 @@ class CT_P(BaseOxmlElement):
             self.remove(child)
 
     @property
-    def inner_content_elements(self) -> List[CT_R | CT_Hyperlink | CT_FldSimple]:
+    def inner_content_elements(self) -> List[P_Elem]:
         """Run and hyperlink children of the `w:p` element, in document order."""
-        return self.xpath("./w:r | ./w:hyperlink | ./w:fldSimple")
+        return self.xpath(
+            "./w:r | "
+            "./w:hyperlink | "
+            "./w:fldSimple | "
+            "./m:oMathPara | "
+            "./m:oMath"
+        )
 
     @property
     def lastRenderedPageBreaks(self) -> List[CT_LastRenderedPageBreak]:
