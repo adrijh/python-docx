@@ -1,5 +1,7 @@
 """|NumberingPart| and closely related objects."""
 
+from typing import Self
+
 from ..opc.part import XmlPart
 from ..shared import lazyproperty
 
@@ -9,7 +11,7 @@ class NumberingPart(XmlPart):
     or glossary."""
 
     @classmethod
-    def new(cls):
+    def new(cls) -> Self:
         """Return newly created empty numbering part, containing only the root
         ``<w:numbering>`` element."""
         raise NotImplementedError

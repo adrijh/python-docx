@@ -11,11 +11,12 @@ from docx.enum.text import WD_BREAK
 from docx.oxml.alternate import CT_AlternateContent
 from docx.oxml.drawing import CT_Drawing, CT_Pict
 from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
-from docx.oxml.text.run import CT_Sym
+from docx.oxml.text.run import CT_FtnEdnRef, CT_Sym
 from docx.shape import InlineShape
 from docx.shared import StoryChild
 from docx.styles.style import CharacterStyle
 from docx.text.font import Font
+from docx.text.ftnedn import EndnoteReference, FootnoteReference
 from docx.text.pagebreak import RenderedPageBreak
 from docx.text.symbol import Symbol
 
@@ -25,7 +26,15 @@ if TYPE_CHECKING:
     from docx.oxml.text.run import CT_R, CT_Text
     from docx.shared import Length
 
-RunElem: TypeAlias = str | RenderedPageBreak | Drawing | Picture | Symbol
+RunElem: TypeAlias = (
+    str |
+    RenderedPageBreak |
+    Drawing |
+    Picture |
+    Symbol |
+    FootnoteReference |
+    EndnoteReference
+)
 
 class Run(StoryChild):
     """Proxy object wrapping `<w:r>` element.
@@ -192,6 +201,14 @@ class Run(StoryChild):
                     for choice_elem in choice.iter_inner_content():
                         yield choice_elem
 
+            if isinstance(item, CT_FtnEdnRef):
+                if item._nsptag == "w:footnoteReference":
+                    yield FootnoteReference(item, self)
+
+                if item._nsptag == "w:endnoteReference":
+                    yield EndnoteReference(item, self)
+                
+
     @property
     def style(self) -> CharacterStyle:
         """Read/write.
@@ -268,6 +285,33 @@ class Run(StoryChild):
 
         self._r.symbol = code
 
+    @property
+    def footnote_ref(self) -> FootnoteReference | None:
+        ref = self._r.footnote_ref
+        if ref is not None:
+            return FootnoteReference(ref, self)
+
+        return None
+
+    @footnote_ref.setter
+    def footnote_ref(self, id: int) -> None:
+        style_id = self.part.get_style_id("footnote reference", WD_STYLE_TYPE.CHARACTER)
+        self._r.style = style_id
+        self._r.footnote_ref = id
+
+    @property
+    def endnote_ref(self) -> EndnoteReference | None:
+        ref = self._r.endnote_ref
+        if ref is not None:
+            return EndnoteReference(ref, self)
+
+        return None
+
+    @endnote_ref.setter
+    def endnote_ref(self, id: int) -> None:
+        style_id = self.part.get_style_id("endnote reference", WD_STYLE_TYPE.CHARACTER)
+        self._r.style = style_id
+        self._r.endnote_ref = id
 
 class _Text:
     """Proxy object wrapping `<w:t>` element."""
