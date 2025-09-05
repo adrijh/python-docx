@@ -13,6 +13,7 @@ from docx.parts.comments import (
     CommentsIdsPart,
     CommentsPart,
 )
+from docx.parts.ftnedn import EndnotesPart, FootnotesPart
 from docx.parts.hdrftr import FooterPart, HeaderPart
 from docx.parts.numbering import NumberingPart
 from docx.parts.people import PeoplePart
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
     from docx.opc.coreprops import CoreProperties
     from docx.settings import Settings
     from docx.styles.style import BaseStyle
+    from docx.text.ftnedn import Endnotes, Footnotes
 
 
 class DocumentPart(StoryPart):
@@ -96,14 +98,14 @@ class DocumentPart(StoryPart):
         return InlineShapes(self._element.body, self)
 
     @lazyproperty
-    def numbering_part(self):
+    def numbering_part(self) -> NumberingPart:
         """A |NumberingPart| object providing access to the numbering definitions for
         this document.
 
         Creates an empty numbering part if one is not present.
         """
         try:
-            return self.part_related_by(RT.NUMBERING)
+            return cast(NumberingPart, self.part_related_by(RT.NUMBERING))
         except KeyError:
             numbering_part = NumberingPart.new()
             self.relate_to(numbering_part, RT.NUMBERING)
@@ -125,6 +127,18 @@ class DocumentPart(StoryPart):
         """A |Styles| object providing access to the styles in the styles part of this
         document."""
         return self._styles_part.styles
+
+    @property
+    def footnotes(self) -> Footnotes:
+        """A |Footnotes| object providing access to the footnotes in the footnotes part of this
+        document."""
+        return self._footnotes_part.footnotes
+
+    @property
+    def endnotes(self) -> Endnotes:
+        """A |Endnotes| object providing access to the endnotes in the endnotes part of this
+        document."""
+        return self._endnotes_part.endnotes
 
     @property
     def _settings_part(self) -> SettingsPart:
@@ -199,3 +213,29 @@ class DocumentPart(StoryPart):
             people_part = PeoplePart.new()
             self.relate_to(people_part, RT.PEOPLE)
             return people_part 
+
+    @lazyproperty
+    def _footnotes_part(self) -> FootnotesPart:
+        try:
+            part = self.part_related_by(RT.FOOTNOTES)
+            assert part.package is not None
+            return FootnotesPart.load(part.partname, part.content_type, part.blob, part.package)
+        except KeyError:
+            package = self.package
+            assert package is not None
+            footnotes_part = FootnotesPart.new(package)
+            self.relate_to(footnotes_part, RT.FOOTNOTES)
+            return footnotes_part
+
+    @lazyproperty
+    def _endnotes_part(self) -> EndnotesPart:
+        try:
+            part = self.part_related_by(RT.ENDNOTES)
+            assert part.package is not None
+            return EndnotesPart.load(part.partname, part.content_type, part.blob, part.package)
+        except KeyError:
+            package = self.package
+            assert package is not None
+            endnotes_part = EndnotesPart.new(package)
+            self.relate_to(endnotes_part, RT.ENDNOTES)
+            return endnotes_part

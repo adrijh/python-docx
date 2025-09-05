@@ -34,6 +34,7 @@ from docx.oxml.text.run import (
     CT_R,
     CT_Br,
     CT_Cr,
+    CT_FtnEdnRef,
     CT_NoBreakHyphen,
     CT_PTab,
     CT_Sym,
@@ -98,6 +99,8 @@ register_element_cls("w:ptab", CT_PTab)
 register_element_cls("w:r", CT_R)
 register_element_cls("w:t", CT_Text)
 register_element_cls("w:sym", CT_Sym)
+register_element_cls("w:footnoteReference", CT_FtnEdnRef)
+register_element_cls("w:endnoteReference", CT_FtnEdnRef)
 
 # ---------------------------------------------------------------------------
 # math related mappings
@@ -306,7 +309,7 @@ register_element_cls("w:tab", CT_TabStop)
 register_element_cls("w:tabs", CT_TabStops)
 register_element_cls("w:widowControl", CT_OnOff)
 
-from .text.block import (
+from .text.block import ( # noqa
     CT_Sdt,
     CT_SdtContent,
     CT_SdtDocPart,
@@ -318,3 +321,14 @@ register_element_cls("w:sdtPr", CT_SdtPr)
 register_element_cls("w:sdtContent", CT_SdtContent)
 register_element_cls("w:docPartObj", CT_SdtDocPart)
 register_element_cls('w:docPartGallery', CT_String)
+
+from .ftnedn import ( # noqa
+    CT_Endnotes,
+    CT_Footnotes,
+    CT_FtnEdn,
+)
+
+register_element_cls("w:footnotes", CT_Footnotes)
+register_element_cls('w:footnote', CT_FtnEdn)
+register_element_cls("w:endnotes", CT_Endnotes)
+register_element_cls('w:endnote', CT_FtnEdn)

@@ -187,4 +187,38 @@
     <w:semiHidden/>
     <w:unhideWhenUsed/>
   </w:style>
+  <w:style w:type="character" w:styleId="FootnoteReference">
+    <w:name w:val="footnote reference"/>
+    <w:basedOn w:val="DefaultParagraphFont"/>
+    <w:uiPriority w:val="99"/>
+    <w:rsid w:val="005B405F"/>
+    <w:rPr>
+      <w:vertAlign w:val="superscript"/>
+    </w:rPr>
+  </w:style>
+    <w:style w:type="paragraph" w:styleId="FootnoteText">
+    <w:name w:val="footnote text"/>
+    <w:basedOn w:val="Normal"/>
+    <w:link w:val="FootnoteTextChar"/>
+    <w:uiPriority w:val="99"/>
+    <w:rsid w:val="008B7EF4"/>
+    <w:rPr>
+      <w:sz w:val="20"/>
+      <w:szCs w:val="20"/>
+    </w:rPr>
+  </w:style>
+  <w:style w:type="character" w:customStyle="1" w:styleId="FootnoteTextChar">
+    <w:name w:val="Footnote Text Char"/>
+    <w:basedOn w:val="DefaultParagraphFont"/>
+    <w:link w:val="FootnoteText"/>
+    <w:uiPriority w:val="99"/>
+    <w:rsid w:val="008D72F2"/>
+    <w:rPr>
+      <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Times New Roman"/>
+      <w:color w:val="333333"/>
+      <w:sz w:val="20"/>
+      <w:szCs w:val="20"/>
+      <w:lang w:eastAsia="es-ES"/>
+    </w:rPr>
+  </w:style>
 </w:styles>

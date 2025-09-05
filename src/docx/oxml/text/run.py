@@ -9,6 +9,7 @@ from docx.oxml.drawing import CT_Drawing
 from docx.oxml.ns import qn
 from docx.oxml.simpletypes import ST_BrClear, ST_BrType
 from docx.oxml.text.font import CT_RPr
+from docx.oxml.text.ftnedn import CT_FtnEdnRef
 from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
 from docx.oxml.text.symbol import CT_Sym
 from docx.oxml.xmlchemy import (
@@ -26,11 +27,20 @@ if TYPE_CHECKING:
 # ------------------------------------------------------------------------------------
 # Run-level elements
 
-R_Elem: TypeAlias = str | CT_Drawing | CT_LastRenderedPageBreak | CT_AlternateContent | CT_Sym
+R_Elem: TypeAlias = (
+    str |
+    CT_Drawing |
+    CT_LastRenderedPageBreak |
+    CT_AlternateContent |
+    CT_Sym |
+    CT_FtnEdnRef
+)
 
 class CT_R(BaseOxmlElement):
     """`<w:r>` element, containing the properties and text for a run."""
 
+    add_ftnRefs: Callable[[], CT_FtnEdnRef]
+    add_ednRefs: Callable[[], CT_FtnEdnRef]
     add_br: Callable[[], CT_Br]
     add_tab: Callable[[], CT_TabStop]
     get_or_add_rPr: Callable[[], CT_RPr]
@@ -46,6 +56,8 @@ class CT_R(BaseOxmlElement):
     t = ZeroOrMore("w:t")
     tab = ZeroOrMore("w:tab")
     sym: CT_Sym | None = ZeroOrOne("w:sym") # pyright: ignore[reportAssignmentType]
+    ftnRefs = ZeroOrMore("w:footnoteReference")
+    ednRefs = ZeroOrMore("w:endnoteReference")
 
     def add_t(self, text: str) -> CT_Text:
         """Return a newly added `<w:t>` element containing `text`."""
@@ -80,6 +92,7 @@ class CT_R(BaseOxmlElement):
             CT_LastRenderedPageBreak,
             CT_AlternateContent,
             CT_Sym,
+            CT_FtnEdnRef,
         )
 
         def iter_items() -> Iterator[R_Elem]:
@@ -94,6 +107,8 @@ class CT_R(BaseOxmlElement):
                 " | w:tab"
                 " | mc:AlternateContent"
                 " | w:sym"
+                " | w:footnoteReference"
+                " | w:endnoteReference"
             ):
                 if isinstance(e, non_text_types):
                     yield from accum.pop()
@@ -169,7 +184,31 @@ class CT_R(BaseOxmlElement):
         sym.val = code
         sym.font = "Symbol"
         return sym
-        
+
+    @property
+    def footnote_ref(self) -> CT_FtnEdnRef | None:
+        for e in self.xpath("w:footnoteReference"):
+            return e
+
+        return None
+
+    @footnote_ref.setter
+    def footnote_ref(self, id: int) -> None:
+        ref = self.add_ftnRefs()
+        ref.id = id # type: ignore
+
+    @property
+    def endnote_ref(self) -> CT_FtnEdnRef | None:
+        for e in self.xpath("w:endnoteReference"):
+            return e
+
+        return None
+
+    @endnote_ref.setter
+    def endnote_ref(self, id: int) -> None:
+        ref = self.add_ednRefs()
+        ref.id = id # type: ignore
+        return ref
 
 
 # ------------------------------------------------------------------------------------
