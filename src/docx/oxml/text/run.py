@@ -58,6 +58,7 @@ class CT_R(BaseOxmlElement):
     sym: CT_Sym | None = ZeroOrOne("w:sym") # pyright: ignore[reportAssignmentType]
     ftnRefs = ZeroOrMore("w:footnoteReference")
     ednRefs = ZeroOrMore("w:endnoteReference")
+    object = ZeroOrMore("w:object")
 
     def add_t(self, text: str) -> CT_Text:
         """Return a newly added `<w:t>` element containing `text`."""
