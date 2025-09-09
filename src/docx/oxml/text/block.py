@@ -4,17 +4,19 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from docx.oxml.shared import CT_String
-from docx.oxml.table import CT_Tbl
-from docx.oxml.text.paragraph import CT_P
 from docx.oxml.xmlchemy import (
     BaseOxmlElement,
     OneAndOnlyOne,
     ZeroOrMore,
     ZeroOrOne,
 )
+
+if TYPE_CHECKING:
+    from docx.oxml.table import CT_Tbl
+    from docx.oxml.text.paragraph import CT_P
 
 
 class CT_Sdt(BaseOxmlElement):
@@ -23,20 +25,28 @@ class CT_Sdt(BaseOxmlElement):
     content = OneAndOnlyOne("w:sdtContent")
     sdtPr: CT_SdtPr | None = ZeroOrOne("w:sdtPr") # pyright: ignore[reportAssignmentType]
 
+    @property
+    def text(self) -> str:
+        return self.content.text
+
+
 
 class CT_SdtContent(BaseOxmlElement):
     """`<w:sdtContent>` element."""
 
-    p_lst = List[CT_P]
     p = ZeroOrMore("w:p")
-
-    tbl_lst = List[CT_Tbl]
     tbl = ZeroOrMore("w:tbl")
+    sdt = ZeroOrMore("w:sdt")
 
     @property
-    def inner_content_elements(self) -> List[CT_P]:
+    def inner_content_elements(self) -> List[CT_P | CT_Tbl | CT_Sdt]:
         """Paragraph children of the `w:sdt` element, in document order."""
-        return self.xpath("./w:p")
+        return self.xpath("./w:p | ./w:tbl | ./w:sdt")
+
+    @property
+    def text(self) -> str:
+        """The textual content for the runs of this sdt block content."""
+        return "".join(e.text for e in self.xpath("w:r"))
 
 
 class CT_SdtPr(BaseOxmlElement):

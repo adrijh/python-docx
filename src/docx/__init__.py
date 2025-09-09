@@ -14,7 +14,7 @@ from docx.parts.ftnedn import EndnotesPart, FootnotesPart
 if TYPE_CHECKING:
     from docx.opc.part import Part
 
-__version__ = "1.2.9"
+__version__ = "1.2.10"
 __fork__ = "adrijh/python-docx"
 
 
