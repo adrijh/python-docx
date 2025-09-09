@@ -16,11 +16,12 @@ from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrMore, ZeroOrOne
 if TYPE_CHECKING:
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
     from docx.oxml.section import CT_SectPr
+    from docx.oxml.text.block import CT_Sdt
     from docx.oxml.text.pagebreak import CT_LastRenderedPageBreak
     from docx.oxml.text.parfmt import CT_PPr
 
 
-P_Elem: TypeAlias = CT_R | CT_Hyperlink | CT_FldSimple | CT_OMathPara | CT_OMath
+P_Elem: TypeAlias = "CT_R | CT_Hyperlink | CT_FldSimple | CT_OMathPara | CT_OMath | CT_Sdt"
 
 
 class CT_P(BaseOxmlElement):
@@ -38,6 +39,8 @@ class CT_P(BaseOxmlElement):
     fldSimple = ZeroOrMore("w:fldSimple")
     oMathPara = ZeroOrMore("m:oMathPara")
     oMath = ZeroOrMore("m:oMath")
+
+    sdt = ZeroOrMore("w:sdt")
 
     def add_p_before(self) -> CT_P:
         """Return a new `<w:p>` element inserted directly prior to this one."""
@@ -69,6 +72,7 @@ class CT_P(BaseOxmlElement):
         return self.xpath(
             "./w:r | "
             "./w:hyperlink | "
+            "./w:sdt | "
             "./w:fldSimple | "
             "./m:oMathPara | "
             "./m:oMath"
@@ -114,7 +118,7 @@ class CT_P(BaseOxmlElement):
         Inner-content child elements like `w:r` and `w:hyperlink` are translated to
         their text equivalent.
         """
-        return "".join(e.text for e in self.xpath("w:r | w:hyperlink | w:fldSimple"))
+        return "".join(e.text for e in self.xpath("w:r | w:hyperlink | w:fldSimple | w:sdt"))
 
     def _insert_pPr(self, pPr: CT_PPr) -> CT_PPr:
         self.insert(0, pPr)

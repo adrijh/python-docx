@@ -6,13 +6,10 @@ from typing import TYPE_CHECKING, Iterator, List, TypeAlias, cast
 
 from docx.enum.style import WD_STYLE_TYPE
 from docx.math import Math, MathPara
-from docx.oxml.math import CT_OMath, CT_OMathPara
 from docx.oxml.numbering import CT_NumPr
-from docx.oxml.text.field import CT_FldSimple
-from docx.oxml.text.hyperlink import CT_Hyperlink
-from docx.oxml.text.run import CT_R
 from docx.shared import StoryChild
 from docx.styles.style import ParagraphStyle
+from docx.text.block import SdtBlock
 from docx.text.field import Field
 from docx.text.hyperlink import Hyperlink
 from docx.text.pagebreak import RenderedPageBreak
@@ -26,7 +23,7 @@ if TYPE_CHECKING:
     from docx.styles.style import CharacterStyle
 
 
-ParElem: TypeAlias = Run | Hyperlink | Field | Math | MathPara
+ParElem: TypeAlias = "Run | Hyperlink | Field | Math | MathPara | SdtBlock"
 
 
 class Paragraph(StoryChild):
@@ -145,6 +142,12 @@ class Paragraph(StoryChild):
         precise position of the hyperlink within the paragraph text is important. Note
         that a hyperlink itself contains runs.
         """
+        from docx.oxml.math import CT_OMath, CT_OMathPara
+        from docx.oxml.text.block import CT_Sdt
+        from docx.oxml.text.field import CT_FldSimple
+        from docx.oxml.text.hyperlink import CT_Hyperlink
+        from docx.oxml.text.run import CT_R
+
         for elem in self._p.inner_content_elements:
             if isinstance(elem, CT_R):
                 yield Run(elem, self)
@@ -160,6 +163,9 @@ class Paragraph(StoryChild):
 
             if isinstance(elem, CT_OMathPara):
                 yield MathPara(elem, self)
+
+            if isinstance(elem, CT_Sdt):
+                yield SdtBlock(elem, self)
 
     @property
     def paragraph_format(self):
