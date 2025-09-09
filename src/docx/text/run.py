@@ -16,7 +16,7 @@ from docx.shape import InlineShape
 from docx.shared import StoryChild
 from docx.styles.style import CharacterStyle
 from docx.text.font import Font
-from docx.text.ftnedn import EndnoteReference, FootnoteReference
+from docx.text.ftnedn_ref import EndnoteReference, FootnoteReference
 from docx.text.pagebreak import RenderedPageBreak
 from docx.text.symbol import Symbol
 

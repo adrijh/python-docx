@@ -219,7 +219,7 @@ class DocumentPart(StoryPart):
         try:
             part = self.part_related_by(RT.FOOTNOTES)
             assert part.package is not None
-            return FootnotesPart.load(part.partname, part.content_type, part.blob, part.package)
+            return cast(FootnotesPart, part)
         except KeyError:
             package = self.package
             assert package is not None
@@ -232,7 +232,7 @@ class DocumentPart(StoryPart):
         try:
             part = self.part_related_by(RT.ENDNOTES)
             assert part.package is not None
-            return EndnotesPart.load(part.partname, part.content_type, part.blob, part.package)
+            return cast(EndnotesPart, part)
         except KeyError:
             package = self.package
             assert package is not None

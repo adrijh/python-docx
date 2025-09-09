@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Iterator
 
 from typing_extensions import TypeAlias
 
+from docx.oxml.ftnedn import CT_FtnEdn
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.block import CT_Sdt
 from docx.oxml.text.paragraph import CT_P
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
     from docx.table import Table
     from docx.text.block import SdtBlock
 
-BlockItemElement: TypeAlias = "CT_Body | CT_HdrFtr | CT_Tc"
+BlockItemElement: TypeAlias = "CT_Body | CT_HdrFtr | CT_Tc | CT_FtnEdn"
 
 
 class BlockItemContainer(StoryChild):
@@ -73,7 +74,7 @@ class BlockItemContainer(StoryChild):
         return Table(tbl, self)
 
     def iter_inner_content(self) -> Iterator[Paragraph | Table | SdtBlock]:
-        """Generate each `Paragraph` or `Table` in this container in document order."""
+        """Generate each `Paragraph`, `Table` in this container in document order."""
 
         for element in self._element.inner_content_elements:
             yield self._parse_content_elem(element)

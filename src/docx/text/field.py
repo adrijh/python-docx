@@ -5,9 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterator
 
 from docx.oxml.text.field import CT_FldSimple
-from docx.oxml.text.run import CT_R
 from docx.shared import StoryChild
-from docx.text.run import Run
 
 if TYPE_CHECKING:
     import docx.types as t
@@ -23,6 +21,9 @@ class Field(StoryChild):
 
     def iter_inner_content(self) -> Iterator[Run]:
         """Generate the content-items in this field in the order they appear."""
+        from docx.oxml.text.run import CT_R
+        from docx.text.run import Run
+
         for item in self._fld.inner_content_elements:
             if isinstance(item, CT_R):  # pyright: ignore[reportUnnecessaryIsInstance]
                 yield Run(item, self)
