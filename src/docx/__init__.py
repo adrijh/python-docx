@@ -9,11 +9,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Type
 
 from docx.api import Document
+from docx.parts.ftnedn import EndnotesPart, FootnotesPart
 
 if TYPE_CHECKING:
     from docx.opc.part import Part
 
-__version__ = "1.2.8"
+__version__ = "1.2.9"
 __fork__ = "adrijh/python-docx"
 
 
@@ -53,6 +54,8 @@ PartFactory.part_type_for[CT.WML_HEADER] = HeaderPart
 PartFactory.part_type_for[CT.WML_NUMBERING] = NumberingPart
 PartFactory.part_type_for[CT.WML_SETTINGS] = SettingsPart
 PartFactory.part_type_for[CT.WML_STYLES] = StylesPart
+PartFactory.part_type_for[CT.WML_FOOTNOTES] = FootnotesPart
+PartFactory.part_type_for[CT.WML_ENDNOTES] = EndnotesPart
 
 del (
     CT,
@@ -64,5 +67,7 @@ del (
     PartFactory,
     SettingsPart,
     StylesPart,
+    FootnotesPart,
+    EndnotesPart,
     part_class_selector,
 )

@@ -66,7 +66,6 @@ class Webp(BaseImageHeader):
     @classmethod
     def _parse_vp8l(cls, header: bytes) -> tuple[int, int]:
         """Parse VP8L (lossless) format"""
-        print("lossless")
 
         if len(header) < 25:
             raise ValueError("Header too short for VP8L format")
@@ -85,7 +84,6 @@ class Webp(BaseImageHeader):
     def _parse_vp8x(cls, header: bytes) -> tuple[int, int]:
         """Parse VP8X (extended) format"""
 
-        print("extended")
         if len(header) < 30:
             raise ValueError("Header too short for VP8X format")
         

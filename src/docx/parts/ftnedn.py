@@ -41,7 +41,7 @@ class FootnotesPart(StoryPart):
     def footnotes(self) -> Footnotes:
         """The |_Footnotes| instance containing the styles (<w:style> element proxies) for
         this styles part."""
-        return Footnotes(self._element)
+        return Footnotes(self._element, self)
 
     def add_footnote(self, footnote: Footnote) -> None:
         self._element._insert_footnote(footnote._element)
@@ -71,8 +71,7 @@ class EndnotesPart(StoryPart):
     def endnotes(self):
         """The |_Styles| instance containing the styles (<w:style> element proxies) for
         this styles part."""
-        return Endnotes(self.element)
+        return Endnotes(self.element, self)
 
     def add_endnote(self, endnote: Endnote) -> None:
-        endnotes = Endnotes(self.element)
-        endnotes.add_endnote(endnote)
+        self._element._insert_endnote(endnote._element)

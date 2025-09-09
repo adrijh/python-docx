@@ -52,7 +52,6 @@ class NumberingPart(XmlPart):
                 continue
 
             for ovr in num.lvlOverride_lst:
-                print(ovr.ilvl)
                 if ovr.ilvl is None or ovr.ilvl != ilvl:
                     continue
 

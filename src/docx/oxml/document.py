@@ -5,11 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, List
 
 from docx.oxml.section import CT_SectPr
-from docx.oxml.text.block import CT_Sdt
 from docx.oxml.xmlchemy import BaseOxmlElement, ZeroOrMore, ZeroOrOne
 
 if TYPE_CHECKING:
     from docx.oxml.table import CT_Tbl
+    from docx.oxml.text.block import CT_Sdt
     from docx.oxml.text.paragraph import CT_P
 
 
