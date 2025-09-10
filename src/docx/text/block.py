@@ -26,10 +26,14 @@ class SdtBlock(StoryChild):
 
     @property
     def paragraphs(self) -> list[Paragraph]:
+        from docx.text.paragraph import Paragraph
+
         return [Paragraph(p, self) for p in self._sdt.content.p_lst]
 
     @property
     def tables(self) -> list[Table]:
+        from docx.table import Table
+
         return [Table(t, self) for t in self._sdt.content.tbl_lst]
 
     @property
