@@ -53,7 +53,7 @@ class Hyperlink(Parented):
         practice. Still, this value should be understood to mean that "one-or-more"
         rendered page breaks are present.
         """
-        return bool(self._hyperlink.lastRenderedPageBreaks)
+        return bool(self._hyperlink.innermost.lastRenderedPageBreaks)
 
     @property
     def fragment(self) -> str:
@@ -77,7 +77,7 @@ class Hyperlink(Parented):
         sometimes with the address, depending on how the URL is inserted, so don't
         depend on this field being empty to indicate no fragment is present.
         """
-        return self._hyperlink.anchor or ""
+        return self._hyperlink.innermost.anchor or ""
 
     @property
     def runs(self) -> list[Run]:
@@ -88,7 +88,7 @@ class Hyperlink(Parented):
         example part of the hyperlink is bold or the text was changed after the document
         was saved.
         """
-        return [Run(r, self._parent) for r in self._hyperlink.r_lst]
+        return [Run(r, self._parent) for r in self._hyperlink.innermost.r_lst]
 
     @property
     def text(self) -> str:
@@ -98,7 +98,7 @@ class Hyperlink(Parented):
         respectively. Note that rendered page-breaks can occur within a hyperlink but
         they are not reflected in this text.
         """
-        return self._hyperlink.text
+        return self._hyperlink.innermost.text
 
     @property
     def url(self) -> str:

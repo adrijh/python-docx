@@ -10,6 +10,7 @@ from docx.oxml.xmlchemy import (
     BaseOxmlElement,
     OptionalAttribute,
     ZeroOrMore,
+    ZeroOrOne,
 )
 
 if TYPE_CHECKING:
@@ -28,8 +29,17 @@ class CT_Hyperlink(BaseOxmlElement):
     history: bool = OptionalAttribute(  # pyright: ignore[reportAssignmentType]
         "w:history", ST_OnOff, default=True
     )
+    hyperlink: CT_Hyperlink | None = ZeroOrOne("w:hyperlink") # pyright: ignore[reportAssignmentType]
 
     r = ZeroOrMore("w:r")
+
+    @property
+    def innermost(self) -> "CT_Hyperlink":
+        current = self
+        while current.hyperlink is not None:
+            current = current.hyperlink
+
+        return current
 
     @property
     def lastRenderedPageBreaks(self) -> List[CT_LastRenderedPageBreak]:
@@ -37,7 +47,7 @@ class CT_Hyperlink(BaseOxmlElement):
         return self.xpath("./w:r/w:lastRenderedPageBreak")
 
     @property
-    def text(self) -> str:  # pyright: ignore[reportIncompatibleMethodOverride]
+    def text(self) -> str:
         """The textual content of this hyperlink.
 
         `CT_Hyperlink` stores the hyperlink-text as one or more `w:r` children.
